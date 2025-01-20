@@ -36,46 +36,45 @@ shinglesImage.src = 'HerpesZoster.png'; // Path to the shingles texture
 
 
 faceMesh.onResults((results) => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-  
-    if (results.multiFaceLandmarks) {
-      results.multiFaceLandmarks.forEach((landmarks) => {
-        // Define the region for just the left eye
-        const leftEyeRegion = [33, 160, 159, 158, 144, 153, 154, 155]; // Left eye landmarks
-  
-        // Get the bounding box for the left eye region
-        const points = leftEyeRegion.map((i) => landmarks[i]);
-        const [x, y, width, height] = getBoundingBox(points);
-  
-        // Adjust the position and size of the bounding box to extend above the eye
-        const margin = 20; // Base margin around the eye
-        const foreheadHeight = 50; // Extend height towards the forehead
-  
-        ctx.drawImage(
-          shinglesImage,
-          x - margin,              // Left edge of the image
-          y - margin - foreheadHeight, // Shift upwards by `foreheadHeight`
-          width + margin * 1.6,      // Width including margin
-          height + margin + foreheadHeight // Height including upward extension
-        );
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
+  if (results.multiFaceLandmarks) {
+    results.multiFaceLandmarks.forEach((landmarks) => {
+      // Define the region for the left eye
+      const leftEyeRegion = [33, 160, 159, 158, 144, 153, 154, 155]; // Left eye landmarks
 
-         // Create a half-closed eye effect by drawing a semi-transparent overlay
-      // ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'; // Dark semi-transparent color
-      // const eyeOverlayHeight = height * 0.6; // Cover half the eye region
-      // ctx.beginPath();
-      // ctx.moveTo(points[0].x * canvas.width, points[0].y * canvas.height); // Start at the top-left of the eye
-      // points.forEach((point) => {
-      //   ctx.lineTo(point.x * canvas.width, point.y * canvas.height); // Draw around the eye region
-      // });
-      // ctx.lineTo(points[0].x * canvas.width, points[0].y * canvas.height + eyeOverlayHeight); // Bottom edge for half-closed
-      // ctx.closePath();
-      // ctx.fill();
+      // Get the bounding box for the left eye region
+      const points = leftEyeRegion.map((i) => landmarks[i]);
+      const [x, y, width, height] = getBoundingBox(points);
+
+      // Adjust bounding box for above-eye shingles effect
+      const margin = 20; // Base margin around the eye
+      const foreheadExtension = height * 1.5; // Extend upward for half-forehead effect
+      const foreheadHeight = 50; // Extend height towards the forehead
+      // Draw the shingles effect above the eye
+      ctx.drawImage(
+        shinglesImage,
+        x - margin,              // Left edge of the image
+        y - margin - foreheadHeight, // Shift upwards by `foreheadHeight`
+        width + margin * 1.6,      // Width including margin
+        height + margin + foreheadHeight // Height including upward extension
+      );
+
+      // Create a half-closed eye effect by drawing a semi-transparent overlay
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'; // Dark semi-transparent color
+      const eyeOverlayHeight = height * 0.6; // Cover half the eye region
+      ctx.beginPath();
+      ctx.moveTo(points[0].x * canvas.width, points[0].y * canvas.height); // Start at the top-left of the eye
+      points.forEach((point) => {
+        ctx.lineTo(point.x * canvas.width, point.y * canvas.height); // Draw around the eye region
       });
-    }
-  });
-  
+      ctx.lineTo(points[0].x * canvas.width, points[0].y * canvas.height + eyeOverlayHeight); // Bottom edge for half-closed
+      ctx.closePath();
+      ctx.fill();
+    });
+  }
+});
   
   
 
